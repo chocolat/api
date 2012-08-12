@@ -8,9 +8,9 @@ The API is separated into **JavaScript** and **Objective-C** parts.
 
 ### JavaScript
 
-The **`js`** folder contains the JavaScript side of the API. These files are all concatenated to form one big file. Files are concatenated in alphabetical order, with the exception of `prelude.js` which goes first.
+The **js** folder contains the JavaScript side of the API. These files are all concatenated to form one big file. Files are concatenated in alphabetical order, with the exception of `prelude.js` which goes first.
 
-The **`deps`** folder contains all JS dependencies. Currently this is `underscore.js`, `underscore.string.js`, and `buckets.js`. While I have no particular objection to including extra libraries with Chocolat, size matters. Bigger libraries increase how long Chocolat takes to download, which means less money and fewer yachts for us `:)`.
+The **deps** folder contains all JS dependencies. Currently this is `underscore.js`, `underscore.string.js`, `sugar.js` and `buckets.js`. While I have no particular objection to including extra libraries with Chocolat, size matters. Bigger libraries increase how long Chocolat takes to download, which means less money and fewer yachts for us :)
 
 To call Objective-C methods, use the three `objc_msgSend` functions. These mimic their C counterparts and have the form
 
