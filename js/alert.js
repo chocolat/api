@@ -1,7 +1,6 @@
 var Alert = {};
 global.Alert = Alert;
 
-
 /**
  * Shows an alert.
  *
@@ -28,6 +27,8 @@ Alert.show = function(title, message, buttons) {
 
 /**
  * Play the system beep sound.
+ *
+ * @memberOf Alert
  */
 Alert.beep = function() {
     global.objc_msgSend("controller", "js_beep");
