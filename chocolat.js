@@ -2,6 +2,10 @@ var path = require('path');
 
 global.current_mixin_name = null;
 
+// This line is important! It sets up the globals for the api
+require('api');
+
+
 // var os = require('os');
 // console.log("Bite my shiny metal ass [" + os.platform() + " " + os.release() + "]");
 

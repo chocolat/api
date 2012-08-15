@@ -11,4 +11,5 @@ for n in names:
     with open('js/' + n, 'r') as f:
         full += f.read() + '\n\n\n'
 
-print full
+with open('api.js', 'w') as f:
+    f.write(full)

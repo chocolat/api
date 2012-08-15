@@ -39,5 +39,20 @@ Editor.editors()
 // OpenPanel, SavePanel
 ...
 
-// 
+// Hooks
+
+Hooks.addTooltip()   // If the mouse hovers for a sufficient amount of time, with optional modifiers
+Hooks.addGesture(<kind>)   // "pinch", "swipe", "rotate", etc
+
+// Multicursor
+Editor.cursors.addRange()
+Editor.cursors.addInsertionPoint()
+Editor.cursors.setRange()
+Editor.cursors.setInsertionPoint()
+Editor.cursors.removeInRange()
+Editor.cursors.each()
+
+
+// Local Notifications
+Alert.notify({ ... })
 

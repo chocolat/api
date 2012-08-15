@@ -174,6 +174,17 @@ Recipe.prototype.characterRangeForLineIndexes = function(rng) {
     return objc_msgSendSync(this.nid, "characterRangeForLineIndexes:", rng);
 };
 
+/**
+ * Gives a character range for the nearest word to the given character range.
+ *
+ * @param {Range} rng a character range.
+ * @memberOf Recipe
+ */
+Recipe.prototype.wordRangeForRange = function(rng) {
+    throw_ifnot_range(rng, "rng of wordRangeForRange");
+    return objc_msgSendSync(this.nid, "rangeOfNearestWordTo:", rng);
+};
+
 /* Not sure we need this
 Recipe.prototype.lineMarkersForCharacterRange = function(rng) {
   

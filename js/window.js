@@ -427,7 +427,7 @@ Window.prototype.useDefaultCSS = function() {
 };
 Window.prototype.setUseDefaultCSS = function(flag) {
     
-    throw_ifnot_boolean(newHtmlPath, "flag of setUseDefaultCSS", null);
+    throw_ifnot_boolean(flag, "flag of setUseDefaultCSS", null);
     
     objc_msgSend(this.nid, "setUseDefaultStylesheet:", flag);
 };
@@ -438,17 +438,35 @@ Window.prototype.__defineSetter__("useDefaultCSS", Window.prototype.setUseDefaul
  * Eval some code on the client-side.
  * 
  * Example:
- *     win.eval("document.write('Some text')");
+ *     win.evalCode("document.write('Some text')");
  * 
  * @param {String} code some code to evaluate on the client-side.
  * @memberOf Window
  * @section Communication
  */
-Window.prototype.eval = function(code) {
+Window.prototype.evalCode = function(code) {
     
-    throw_ifnot_string(code, "code of eval");
+    throw_ifnot_string(code, "code of evalString");
     
-    objc_msgSend(this.nid, "client_eval:", code);
+    return objc_msgSend(this.nid, "client_eval:", code);
+};
+
+/**
+ * Eval some code on the client-side, *and return a value*. The `.evalExpr` function must wrap your code in order to extract a value from it. So it is not suitable for defining variables, etc. Use `.evalCode` if you don't need a return value.
+ * 
+ * Example:
+ *     console.log(win.evalExpr("document.body.innerHTML"));
+ * 
+ * @param {String} code some code to evaluate on the client-side.
+ * @return {Value} the return value of the code. Must be a json-able type.
+ * @memberOf Window
+ * @section Communication
+ */
+Window.prototype.evalExpr = function(code) {
+    
+    throw_ifnot_string(code, "code of evalString");
+    
+    return JSON.parse(objc_msgSendSync(this.nid, "client_eval:andReturnValue:", code, true))[0];
 };
 
 /**
@@ -516,10 +534,10 @@ Window.prototype.applyFunction = function(f, args) {
     
     if (typeof f === "string") {
         
-        objc_msgSend(this.nid, "client_callFunctionNamed:jsonArguments:", f, JSON.stringify([args]));
+        objc_msgSendSync(this.nid, "client_callFunctionNamed:jsonArguments:", f, JSON.stringify([args]));
     }
     else {
-        objc_msgSend(this.nid, "client_callFunctionCode:jsonArguments:", f.toString(), JSON.stringify([args]));
+        objc_msgSendSync(this.nid, "client_callFunctionCode:jsonArguments:", f.toString(), JSON.stringify([args]));
     }
 };
 
@@ -528,7 +546,7 @@ Window.prototype.applyFunction = function(f, args) {
 * @memberOf Sheet
 */
 var Sheet = function(w) {
-  Window.call(this);
+//  Window.call(this);
   this.parentWindow = w;
 };
 
@@ -539,16 +557,67 @@ global.Sheet = Sheet;
 /**
  * Creates a new Popover.
  * 
+ * @param {Editor} parent the editor containing the text.
  * @param {Range} range the range of text over which the popover should appear.
- * @param {Editor} editor the editor containing the text.
  * @memberOf Popover
  */
-var Popover = function(range, editor) {
-  Window.call(this);
-  this.range = range;
-  this.editor = editor;
+function Popover(parent, range) {
+    
+    this.nid = objc_msgSendSync(private_get_mixin() || "controller", "createWindow:", "Popover");
+    objc_msgSend(this.nid, "setParent:", parent.nid);
+    if (range != null) {
+        objc_msgSend(this.nid, "setRange:", range);
+    }
+    
+//  Window.call(this);
+//  this.range = range;
+//  this.editor = editor;
 };
 
 noddyInherit(Popover, Window);
+
+/**
+ * Get or set the window's size. Setter is equivalent to `.setSize(size, false)`.
+ * @return {Size} the window's size.
+ * @isproperty
+ * @memberOf Window
+ * @section Basics
+ */
+Popover.prototype.size = function() {
+    var theFrame = objc_msgSendSync(this.nid, "frame");
+    if (theFrame != null) {
+        if ('x' in theFrame)
+            delete theFrame.x;
+        if ('y' in theFrame)
+            delete theFrame.y;
+    }
+    return theFrame;
+};
+
+/**
+ * Set the window's size. The size should be an object with width and height properties. e.g. `{width: 250, height: 300}`
+ * @param {Size} newSize the new window's frame.
+ * @param {Bool} shouldAnimate optional, whether to animate the resizing or not (default: false)
+ * @memberOf Window
+ * @section Basics
+ */
+Popover.prototype.setSize = function(newSize, shouldAnimate) {
+    if (typeof shouldAnimate === 'undefined') {
+        shouldAnimate = false;
+    }
+    
+    throw_ifnot_size(newSize, "newSize of setSize");
+    throw_ifnot_boolean(shouldAnimate, "shouldAnimate of setSize");
+    
+//    var newNewSize = _.clone(newSize);
+    var newNewSize = { x: 0, y:0, width:newSize.width, height:newSize.height };
+    
+    objc_msgSend(this.nid, "setFrame:animate:", newNewSize, shouldAnimate);
+};
+Popover.prototype.__defineGetter__("size", Popover.prototype.size);
+Popover.prototype.__defineSetter__("size", Popover.prototype.setSize);
+
+
+//_.defaults(Popover.prototype, Window.prototype);
 global.Popover = Popover;
 
