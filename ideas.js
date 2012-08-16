@@ -30,11 +30,18 @@ Document.saveAll()
 .saveAs(<path>)
 
 
+// Tab
+.window()
+.project()
+
+
 // Editor
 Editor.editors()
 
+.tab()
 .hide()
 .starred
+.project()   ===   this.tab().project()
 
 // OpenPanel, SavePanel
 ...
@@ -55,4 +62,16 @@ Editor.cursors.each()
 
 // Local Notifications
 Alert.notify({ ... })
+
+// Icon map
+App.setIconForPath(<icon_location>, <file_path>, <icon_name>) // e.g. App.setIconForPath("scm", "~/somefile.txt", "committed")
+                                                              // GothAlice says: overlay icons too
+
+
+
+// Project
+.path
+.storage
+
+
 

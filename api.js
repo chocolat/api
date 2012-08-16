@@ -1454,9 +1454,9 @@ Window.prototype.applyFunction = function(f, args) {
 * Create a new sheet.
 * @memberOf Sheet
 */
-var Sheet = function(w) {
-//  Window.call(this);
-  this.parentWindow = w;
+var Sheet = function(parent) {
+    this.nid = objc_msgSendSync(private_get_mixin() || "controller", "createWindow:", "Sheet");
+    objc_msgSend(this.nid, "setParent:", parent.nid);
 };
 
 noddyInherit(Sheet, Window);
@@ -1475,12 +1475,13 @@ function Popover(parent, range) {
     this.nid = objc_msgSendSync(private_get_mixin() || "controller", "createWindow:", "Popover");
     objc_msgSend(this.nid, "setParent:", parent.nid);
     if (range != null) {
-        objc_msgSend(this.nid, "setRange:", range);
+        if ('length' in range && 'location' in range)
+            objc_msgSend(this.nid, "setRange:", range);
+        else if ('x' in range && 'y' in range && 'width' in range && 'height' in range)
+            objc_msgSend(this.nid, "setRect:", range);
+        else
+            throw "Unknown second argument to new Popover(); Must be either a Rect or a Range.";
     }
-    
-//  Window.call(this);
-//  this.range = range;
-//  this.editor = editor;
 };
 
 noddyInherit(Popover, Window);
@@ -1489,8 +1490,7 @@ noddyInherit(Popover, Window);
  * Get or set the window's size. Setter is equivalent to `.setSize(size, false)`.
  * @return {Size} the window's size.
  * @isproperty
- * @memberOf Window
- * @section Basics
+ * @memberOf Popover
  */
 Popover.prototype.size = function() {
     var theFrame = objc_msgSendSync(this.nid, "frame");
@@ -1507,8 +1507,7 @@ Popover.prototype.size = function() {
  * Set the window's size. The size should be an object with width and height properties. e.g. `{width: 250, height: 300}`
  * @param {Size} newSize the new window's frame.
  * @param {Bool} shouldAnimate optional, whether to animate the resizing or not (default: false)
- * @memberOf Window
- * @section Basics
+ * @memberOf Popover
  */
 Popover.prototype.setSize = function(newSize, shouldAnimate) {
     if (typeof shouldAnimate === 'undefined') {
@@ -1525,6 +1524,56 @@ Popover.prototype.setSize = function(newSize, shouldAnimate) {
 };
 Popover.prototype.__defineGetter__("size", Popover.prototype.size);
 Popover.prototype.__defineSetter__("size", Popover.prototype.setSize);
+
+
+
+/**
+ * Get or set the popover's behaviour.
+ * 
+ * Note:
+ * 
+ * Behaviour must be one of
+ * 
+ * 1. **strict**: the popover will only be closed if it's closed explicitly, or if the containing window closes.
+ * 2. **transient**: the popover will be closed if the user interacts with something outside the popover.
+ * 3. **semitransient**: the popover will be closed if the user interacts with something outside the popover or its containing window.
+ * 
+ * @return {String} the popover's behaviour.
+ * @isproperty
+ * @memberOf Popover
+ */
+Popover.prototype.behaviour = function() {
+    return objc_msgSendSync(this.nid, "behaviour");
+};
+Popover.prototype.setBehaviour = function(b) {
+    
+    throw_ifnot_string(b, "b of setBehaviour");
+    
+    objc_msgSend(this.nid, "setBehaviour:", b);
+};
+Popover.prototype.__defineGetter__("behaviour", Popover.prototype.behaviour);
+Popover.prototype.__defineSetter__("behaviour", Popover.prototype.setBehaviour);
+
+
+/**
+ * Get or set which edge the popover is attached to: its "direction".
+ * 
+ * @return {String} the popover's edge/direction. One of "top", "bottom", "left" or "right".
+ * @isproperty
+ * @memberOf Popover
+ */
+Popover.prototype.edge = function() {
+    return objc_msgSendSync(this.nid, "edge");
+};
+Popover.prototype.setEdge = function(e) {
+    
+    throw_ifnot_string(b, "e of setEdge");
+    
+    objc_msgSend(this.nid, "setEdge:", b);
+};
+Popover.prototype.__defineGetter__("edge", Popover.prototype.edge);
+Popover.prototype.__defineSetter__("edge", Popover.prototype.setEdge);
+
 
 
 //_.defaults(Popover.prototype, Window.prototype);
