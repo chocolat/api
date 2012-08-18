@@ -182,6 +182,25 @@ Document.current = function() {
 };
 
 /**
+ * Open an existing document or create a new untitled one.
+ *
+ * @param {String} path the path on disk to open. Pass null to create a new untitled document.
+ * @param {Object} parent what to attach the new document to. Currently unused, the only accepted parent is "MainWindow"
+ * @param {Function(Document)} callback a function that will be called one the document is initialized, with an instance of Document.
+ * @memberOf Document
+ */
+Document.open = function(path, parent, callback) {
+    if (path == null)
+        path = null;
+    if (parent == null)
+        parent = null;
+    if (callback == null)
+        callback = null;
+    
+    objc_msgSend("controller", "documentOpenPath:parent:callback:mixin:", path, parent ? parent.nid : null, callback, private_get_mixin());
+};
+
+/**
  * Get the display name of a document.
  *
  * @return {String} the display name of a document.
@@ -292,6 +311,60 @@ Document.prototype.textInRange = function(rng) {
 Document.prototype.replaceTextInRange = function(rng, replacement) {
     objc_msgSend(this.nid, "js_replaceTextInRange:with:", rng, replacement);
 };
+
+/**
+ * Get the document's abstract tab size. If the tab size is set to four, then each hard tab character will show up as the width of four spaces. If using soft tabs, four spaces will act in some way like one tab.
+ *
+ * @return {Number} the tab size.
+ * @memberOf Document
+ * @isproperty
+ */
+Document.prototype.tabSize = function() {
+    return objc_msgSendSync(this.nid, "js_tabSize");
+};
+
+//Document.prototype.setTabSize = function(newTabSize) {
+//    objc_msgSend(this.nid, "js_setTabSize:", newTabSize);
+//};
+Document.prototype.__defineGetter__("tabSize", Document.prototype.tabSize);
+//Document.prototype.__defineSetter__("tabSize", Document.prototype.setTabSize);
+
+
+/**
+ * Get whether the document uses spaces for indentation.
+ *
+ * @return {Boolean} whether the document uses soft tabs.
+ * @memberOf Document
+ * @isproperty
+ */
+Document.prototype.usesSoftTabs = function() {
+    return objc_msgSendSync(this.nid, "js_usesSoftTabs");
+};
+
+//Document.prototype.setUsesSoftTabs = function(newUsesSoftTabs) {
+//    objc_msgSend(this.nid, "js_setUsesSoftTabs:", newUsesSoftTabs);
+//};
+Document.prototype.__defineGetter__("usesSoftTabs", Document.prototype.usesSoftTabs);
+//Document.prototype.__defineSetter__("usesSoftTabs", Document.prototype.setUsesSoftTabs);
+
+/**
+ * Get a string representing the *ideal* indentation. Remember: text files do not always use a consistent indentation format! (then again, text files aren't limited to the BMP either yet you're using JavaScript).
+ *
+ * @return {String} A tab character if hard tabs are enabled. A sequence of spaces if soft tabs are enabled..
+ * @memberOf Document
+ * @isproperty
+ */
+Document.prototype.tabString = function() {
+    return objc_msgSendSync(this.nid, "js_tabString");
+};
+
+//Document.prototype.setTabString = function(newTabString) {
+//    objc_msgSend(this.nid, "js_setTabString:", newTabString);
+//};
+Document.prototype.__defineGetter__("tabString", Document.prototype.tabString);
+//Document.prototype.__defineSetter__("tabString", Document.prototype.setTabString);
+
+
 
 /**
  * Access the storage object of the Document (see Storage class).

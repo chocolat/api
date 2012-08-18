@@ -32,15 +32,31 @@ Hooks.addKeyboardShortcut = function(shortcut, callback) {
     });
 };
 
-/**
+/*
+/ * *
  * Add an item in the bottom status bar.
  * @param {String} name the name of the item to add.
  * @param {Function} valueFunction a function that will return the value to display in the status bar.
  * @param {String} selector a scope selector e.g. "<code>source.objc</code>"
  * @memberOf Hooks
- */
+* /
 Hooks.addStatusItem = function (name, valueFunction, selector) {
     
+};
+*/
+
+/**
+ * Modify the text as the user types it. Warning: can make typing things slower.
+ * 
+ * @param {Function(String, Editor) -> String} callback The callback function to be called when the user types. Takes two arguments, the string typed and an instance of Editor in which the change will occur. 
+ * @memberOf Hooks
+ */
+Hooks.onInsertText = function (callback) {
+    throw_ifnot_function(callback);
+    return objc_msgSendSync(private_get_mixin(), "ui_addEventNamed:info:callback:", "insert-text", null,
+                            function(s, nid) {
+                                callback(s, new Editor(nid));
+                            });
 };
 
 

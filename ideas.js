@@ -12,6 +12,7 @@
 
 // MainWindow
 .frame
+.close()
 MainWindow.windows()
 
 
