@@ -29,6 +29,26 @@ function throw_ifnot_string(obj, argname, canBeNull) {
     throw "Non-string argument in " + argname + ".";
 }
 
+
+/**
+ * @api private
+ */
+function throw_ifnot_array(obj, argname, canBeNull) {
+    
+    if (canBeNull === null && obj === null) {
+        return obj;
+    }
+    if (canBeNull !== null && obj === null) {
+        throw_if_null(obj, argname);
+    }
+    
+    if (Object.prototype.toString.call(obj) === '[object Array]') {
+        return obj;
+    }
+    throw "Non-array of strings argument in " + argname + ".";
+}
+
+
 /**
  * @api private
  */

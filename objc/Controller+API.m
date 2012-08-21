@@ -2,6 +2,7 @@
 #import "CHDocumentController.h"
 #import "NoddyBridge.h"
 #import "NoddyThread.h"
+#import "NoddyStorage.h"
 
 @implementation NoddyController (API)
 
@@ -22,6 +23,24 @@
     NoddyScheduleBlock(^{
         [callback call:nil arguments:[NSArray arrayWithObject:doc ?: [NSNull null]]];
     });
+}
+
+- (NoddyStorage*)js_persistentStorage {
+    static NoddyStorage* store;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        store = [[NoddyStorage alloc] init];
+        [store setPersistent:YES];
+    });
+    return store;
+}
+- (NoddyStorage*)js_transientStorage {
+    static NoddyStorage* store;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        store = [[NoddyStorage alloc] init];
+    });
+    return store;
 }
 
 @end

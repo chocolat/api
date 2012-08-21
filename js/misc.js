@@ -5,6 +5,39 @@ var Storage = function(nid) {
 global.Storage = Storage;
 
 /**
+ * Returns the **persistent** global storage object. Data is saved between launches.
+ *
+ * @return {Object} A storage object.
+ * @memberOf Storage
+ */
+
+global._persistent_storage = null;
+Storage.persistent = function() {
+    if (_persistent_storage != null)
+        return _persistent_storage;
+    
+    _persistent_storage = new Storage(objc_msgSendSync("controller", "js_persistentStorage"));
+    return _persistent_storage;
+};
+
+
+/**
+ * Returns the **transient** global storage object. Data is deleted when the app is quit.
+ *
+ * @return {Object} A storage object.
+ * @memberOf Storage
+ */
+global._transient_storage = null;
+Storage.transient = function() {
+    if (_transient_storage != null)
+        return _transient_storage;
+    
+    _transient_storage = new Storage(objc_msgSendSync("controller", "js_transientStorage"));
+    return _transient_storage;
+};
+
+
+/**
  * Retrieves a value in the storage.
  *
  * @param {String} k the key to retrieve.
@@ -12,7 +45,7 @@ global.Storage = Storage;
  * @memberOf Storage
  */
 Storage.prototype.get = function(k) {
-    return objc_msgSendSync(this.nid, "valueForKey", k);
+    return objc_msgSendSync(this.nid, "valueForKey:", k);
 };
 
 /**
@@ -50,6 +83,7 @@ Storage.prototype.each = function(f) {
         f(k, storage[k]);
     }
 };
+
 
 var Util = function() {
     

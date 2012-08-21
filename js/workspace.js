@@ -94,7 +94,7 @@ Tab.current = function() {
     var win = MainWindow.current();
     if (win == null) return null;
     
-    return win.activeTab();
+    return win.currentTab();
 };
 
 /**

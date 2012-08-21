@@ -29,6 +29,26 @@ function throw_ifnot_string(obj, argname, canBeNull) {
     throw "Non-string argument in " + argname + ".";
 }
 
+
+/**
+ * @api private
+ */
+function throw_ifnot_array(obj, argname, canBeNull) {
+    
+    if (canBeNull === null && obj === null) {
+        return obj;
+    }
+    if (canBeNull !== null && obj === null) {
+        throw_if_null(obj, argname);
+    }
+    
+    if (Object.prototype.toString.call(obj) === '[object Array]') {
+        return obj;
+    }
+    throw "Non-array of strings argument in " + argname + ".";
+}
+
+
 /**
  * @api private
  */
@@ -317,6 +337,39 @@ var Storage = function(nid) {
 global.Storage = Storage;
 
 /**
+ * Returns the **persistent** global storage object. Data is saved between launches.
+ *
+ * @return {Object} A storage object.
+ * @memberOf Storage
+ */
+
+global._persistent_storage = null;
+Storage.persistent = function() {
+    if (_persistent_storage != null)
+        return _persistent_storage;
+    
+    _persistent_storage = new Storage(objc_msgSendSync("controller", "js_persistentStorage"));
+    return _persistent_storage;
+};
+
+
+/**
+ * Returns the **transient** global storage object. Data is deleted when the app is quit.
+ *
+ * @return {Object} A storage object.
+ * @memberOf Storage
+ */
+global._transient_storage = null;
+Storage.transient = function() {
+    if (_transient_storage != null)
+        return _transient_storage;
+    
+    _transient_storage = new Storage(objc_msgSendSync("controller", "js_transientStorage"));
+    return _transient_storage;
+};
+
+
+/**
  * Retrieves a value in the storage.
  *
  * @param {String} k the key to retrieve.
@@ -324,7 +377,7 @@ global.Storage = Storage;
  * @memberOf Storage
  */
 Storage.prototype.get = function(k) {
-    return objc_msgSendSync(this.nid, "valueForKey", k);
+    return objc_msgSendSync(this.nid, "valueForKey:", k);
 };
 
 /**
@@ -362,6 +415,7 @@ Storage.prototype.each = function(f) {
         f(k, storage[k]);
     }
 };
+
 
 var Util = function() {
     
@@ -1141,6 +1195,9 @@ Window.prototype.buttons = function() {
     return objc_msgSendSync(this.nid, "buttons");
 };
 Window.prototype.setButtons = function(newButtons) {
+    
+    throw_ifnot_array(newTitle, "newButtons of setButtons");
+    
     objc_msgSend(this.nid, "setButtons:", newButtons);
 };
 Window.prototype.__defineGetter__("buttons", Window.prototype.buttons);
@@ -1234,12 +1291,12 @@ Window.prototype.__defineGetter__("clientOnLoad", Window.prototype.onLoad);
 Window.prototype.__defineSetter__("clientOnLoad", Window.prototype.setOnLoad);
 
 /**
- * Get or set a function that will be called *in the node context* when the page loads.
+ * Get or set a function that will be called *in the node context* when the window loads.
  * 
  * Example:
  *     var win = new Window()
  *     win.htmlPath = "default.html";
- *     win.clientOnLoad = function () {
+ *     win.onLoad = function () {
  *         ...
  *     };
  *     win.run();
@@ -1261,6 +1318,34 @@ Window.prototype.setOnLoad = function(callback) {
 Window.prototype.__defineGetter__("onLoad", Window.prototype.onLoad);
 Window.prototype.__defineSetter__("onLoad", Window.prototype.setOnLoad);
 
+
+/**
+ * Get or set a function that will be called *in the node context* when the window unloads.
+ * 
+ * Example:
+ *     var win = new Window()
+ *     win.htmlPath = "default.html";
+ *     win.onUnload = function () {
+ *         ...
+ *     };
+ *     win.run();
+ * 
+ * @return {Function} a function that will be run when the web view unloads.
+ * @isproperty
+ * @memberOf Window
+ * @section Events
+ */
+Window.prototype.onUnload = function() {
+    return objc_msgSendSync(this.nid, "onUnload");
+};
+Window.prototype.setOnUnload = function(callback) {
+    
+    throw_ifnot_function(callback, "callback of setOnUnload");
+    
+    objc_msgSend(this.nid, "setOnUnload:", callback);
+};
+Window.prototype.__defineGetter__("onUnload", Window.prototype.onUnload);
+Window.prototype.__defineSetter__("onUnload", Window.prototype.setOnUnload);
 
 /**
  * Get or set a path to the HTML file that will be shown in the window. Can be either absolute or relative. Relative paths are relative to the mixin's directory.
@@ -1391,7 +1476,10 @@ Window.prototype.evalExpr = function(code) {
     
     throw_ifnot_string(code, "code of evalString");
     
-    return JSON.parse(objc_msgSendSync(this.nid, "client_eval:andReturnValue:", code, true))[0];
+    var ret = objc_msgSendSync(this.nid, "client_eval:andReturnValue:", code, true);
+    if (ret == null)
+        return null;
+    return JSON.parse(ret)[0];
 };
 
 /**
@@ -1457,20 +1545,32 @@ Window.prototype.applyFunction = function(f, args) {
         args = [];
     }
     
+    throw_ifnot_array(args, "args of applyFunction");
+    
+    var ret = null;
     if (typeof f === "string") {
-        
-        objc_msgSendSync(this.nid, "client_callFunctionNamed:jsonArguments:", f, JSON.stringify([args]));
+        ret = objc_msgSendSync(this.nid, "client_callFunctionNamed:jsonArguments:", f, JSON.stringify([args]));
     }
     else {
-        objc_msgSendSync(this.nid, "client_callFunctionCode:jsonArguments:", f.toString(), JSON.stringify([args]));
+        
+        throw_ifnot_function(f, "f of applyFunction");
+        
+        ret = objc_msgSendSync(this.nid, "client_callFunctionCode:jsonArguments:", f.toString(), JSON.stringify([args]));
     }
+    
+    if (ret == null)
+        return null;
+    return JSON.parse(ret)[0];
 };
 
 /**
-* Create a new sheet.
+* Create a new sheet. Sheet is a subclass of Window and inherits most methods.
 * @memberOf Sheet
 */
 var Sheet = function(parent) {
+    
+    throw_ifnot_object(parent, "parent of new Sheet()");
+    
     this.nid = objc_msgSendSync(private_get_mixin() || "controller", "createWindow:", "Sheet");
     objc_msgSend(this.nid, "setParent:", parent.nid);
 };
@@ -1479,14 +1579,41 @@ noddyInherit(Sheet, Window);
 
 global.Sheet = Sheet;
 
+/*
+/ * *
+ * Create a new pane. Panes are custom UI elements that are shown inside the editor. Pane is a subclass of Window and inherits most methods.
+ * 
+ * Places:
+ * 
+ * Acceptable values for the <em>place</em> parameter are currently:
+ *
+ * - `"preview-area"` the pane will be placed in the Web Preview / Documentation Viewer area (_parent_ must be a `Tab`)
+ * 
+ * @param {String} place a string identifying <em>where</em> the pane should be placed.
+ * @param {Object} parent an Editor, Tab, MainWindow, etc that the pane will be placed in.
+ * @memberOf Pane
+ * /
+var Pane = function(place, parent) {
+    this.nid = objc_msgSendSync(private_get_mixin() || "controller", "createWindow:", "Pane");
+    objc_msgSend(this.nid, "setParent:", parent.nid);
+    objc_msgSend(this.nid, "setPlace:", place);
+};
+
+noddyInherit(Pane, Window);
+
+global.Pane = Pane;
+*/
+
 /**
- * Creates a new Popover.
+ * Creates a new Popover. Popover is a subclass of Window and inherits most methods.
  * 
  * @param {Editor} parent the editor containing the text.
  * @param {Range} range the range of text over which the popover should appear.
  * @memberOf Popover
  */
 function Popover(parent, range) {
+    
+    throw_ifnot_object(parent, "parent of new Popover()");
     
     this.nid = objc_msgSendSync(private_get_mixin() || "controller", "createWindow:", "Popover");
     objc_msgSend(this.nid, "setParent:", parent.nid);
@@ -1694,7 +1821,7 @@ Tab.current = function() {
     var win = MainWindow.current();
     if (win == null) return null;
     
-    return win.activeTab();
+    return win.currentTab();
 };
 
 /**
