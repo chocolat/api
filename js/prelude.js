@@ -29,6 +29,24 @@ function throw_ifnot_string(obj, argname, canBeNull) {
     throw "Non-string argument in " + argname + ".";
 }
 
+/**
+ * @api private
+ */
+function throw_ifnot_object(obj, argname, canBeNull) {
+    
+    if (canBeNull === null && obj === null) {
+        return obj;
+    }
+    if (canBeNull !== null && obj === null) {
+        throw_if_null(obj, argname);
+    }
+    
+    if (typeof obj === 'object') {
+        return obj;
+    }
+    throw "Non-object argument in " + argname + ".";
+}
+
 
 /**
  * @api private

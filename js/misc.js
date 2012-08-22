@@ -16,7 +16,7 @@ Storage.persistent = function() {
     if (_persistent_storage != null)
         return _persistent_storage;
     
-    _persistent_storage = new Storage(objc_msgSendSync("controller", "js_persistentStorage"));
+    global._persistent_storage = new Storage(objc_msgSendSync("controller", "js_persistentStorage"));
     return _persistent_storage;
 };
 
@@ -32,7 +32,7 @@ Storage.transient = function() {
     if (_transient_storage != null)
         return _transient_storage;
     
-    _transient_storage = new Storage(objc_msgSendSync("controller", "js_transientStorage"));
+    global._transient_storage = new Storage(objc_msgSendSync("controller", "js_transientStorage"));
     return _transient_storage;
 };
 

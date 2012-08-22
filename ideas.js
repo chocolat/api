@@ -30,6 +30,9 @@ Document.saveAll()
 
 .saveAs(<path>)
 
+.removeAllErrors(errorkind)
+.addError(errorkind, <options>)
+
 
 // Tab
 .window()

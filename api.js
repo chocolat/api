@@ -29,6 +29,24 @@ function throw_ifnot_string(obj, argname, canBeNull) {
     throw "Non-string argument in " + argname + ".";
 }
 
+/**
+ * @api private
+ */
+function throw_ifnot_object(obj, argname, canBeNull) {
+    
+    if (canBeNull === null && obj === null) {
+        return obj;
+    }
+    if (canBeNull !== null && obj === null) {
+        throw_if_null(obj, argname);
+    }
+    
+    if (typeof obj === 'object') {
+        return obj;
+    }
+    throw "Non-object argument in " + argname + ".";
+}
+
 
 /**
  * @api private
@@ -202,7 +220,7 @@ Alert.show = function(title, message, buttons) {
     if (message == null)
         message = "";
     
-    if (buttons == null || buttons.length)
+    if (buttons == null || buttons === [])
         buttons = ["OK"];
     
     return objc_msgSendSync("controller", "showAlert:", {
@@ -258,7 +276,7 @@ global.Hooks = Hooks;
  * 
  * @param {String} path the path of the new menu item.
  * @param {String} shortcut keyboard shortcut, e.g. "<code>ctrl-alt-cmd-b</code>".
- * @param {Function} callback a callback to be executed when the menu item is selected.
+ * @param {Function} callback a callback to be executed when the menu item is clicked.
  * @memberOf Hooks
  */
 Hooks.addMenuItem = function(path, shortcut, callback) {
@@ -282,6 +300,45 @@ Hooks.addKeyboardShortcut = function(shortcut, callback) {
         "callback": callback
     });
 };
+
+/**
+ * Add a context menu item.
+ * 
+ * @param {String} location what kind of context menu to show the item in. Currently the only valid value is `'editor'`.
+ * @param {String} title the title of the menu item.
+ * @param {Object} options Valid options are `'scope'` (a scope selector), and `'shortcut'`. Optional.
+ * @param {Function} callback a callback to be executed when the menu item is clicked.
+ * @memberOf Hooks
+ */
+Hooks.addContextMenuItem = function(location, title, options, callback) {
+    
+    if (arguments.length === 3) {
+        callback = options;
+        options = {};
+    }
+    
+    if (options == null)
+        options = {};
+    
+    throw_ifnot_string(location);
+    throw_ifnot_string(title);
+    throw_ifnot_object(options);
+    throw_ifnot_function(callback);
+    
+    options['title'] = title;
+    options['callback'] = callback;
+    
+    var sel = null;
+    if (location === 'editor')
+        sel = 'js_addEditorContextMenu:';
+    else if (location === 'project')
+        sel = 'js_addProjectContextMenu:';
+    else
+        throw "Invalid `location` argument ('" + location.toString() + "') for Hooks.addContextMenuItem()";
+    
+    objc_msgSend(private_get_mixin(), sel, options);
+};
+
 
 /*
 / * *
@@ -348,7 +405,7 @@ Storage.persistent = function() {
     if (_persistent_storage != null)
         return _persistent_storage;
     
-    _persistent_storage = new Storage(objc_msgSendSync("controller", "js_persistentStorage"));
+    global._persistent_storage = new Storage(objc_msgSendSync("controller", "js_persistentStorage"));
     return _persistent_storage;
 };
 
@@ -364,7 +421,7 @@ Storage.transient = function() {
     if (_transient_storage != null)
         return _transient_storage;
     
-    _transient_storage = new Storage(objc_msgSendSync("controller", "js_transientStorage"));
+    global._transient_storage = new Storage(objc_msgSendSync("controller", "js_transientStorage"));
     return _transient_storage;
 };
 

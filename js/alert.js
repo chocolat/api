@@ -23,7 +23,7 @@ Alert.show = function(title, message, buttons) {
     if (message == null)
         message = "";
     
-    if (buttons == null || buttons.length)
+    if (buttons == null || buttons === [])
         buttons = ["OK"];
     
     return objc_msgSendSync("controller", "showAlert:", {
