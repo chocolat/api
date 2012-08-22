@@ -1,8 +1,8 @@
 // Things that would be nice to see implemented
 
 // Document
-.tabSize
-.usesSoftTabs
+// √ .tabSize
+// √ .usesSoftTabs
 .symbols()
 
 // Tab
@@ -42,7 +42,7 @@ Document.saveAll()
 // Editor
 Editor.editors()
 
-.tab()
+// √ .tab()
 .hide()
 .starred
 .project()   ===   this.tab().project()

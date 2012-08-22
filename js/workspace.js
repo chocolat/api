@@ -445,6 +445,26 @@ Editor.prototype.document = function() {
 };
 
 /**
+ * The containing tab.
+ *
+ * @return {Tab} The containing tab.
+ * @memberOf Editor
+ */
+Editor.prototype.tab = function() {
+    return private_construct_or_null(Tab, objc_msgSendSync(this.nid, "tabController"));
+};
+
+/**
+ * The containing window.
+ *
+ * @return {MainWindow} The containing window.
+ * @memberOf Editor
+ */
+Editor.prototype.window = function() {
+    return private_construct_or_null(MainWindow, objc_msgSendSync(this.nid, "windowController"));
+};
+
+/**
  * Get or set the selected text in this editor.
  * 
  * @return {Range} the range of the selected text.
