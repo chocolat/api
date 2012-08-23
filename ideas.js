@@ -54,6 +54,7 @@ Editor.editors()
 
 Hooks.addTooltip()   // If the mouse hovers for a sufficient amount of time, with optional modifiers
 Hooks.addGesture(<kind>)   // "pinch", "swipe", "rotate", etc
+Hooks.processSave(<function>)
 
 // Multicursor
 Editor.cursors.addRange()
