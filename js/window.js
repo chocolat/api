@@ -217,7 +217,7 @@ Window.prototype.buttons = function() {
 };
 Window.prototype.setButtons = function(newButtons) {
     
-    throw_ifnot_array(newTitle, "newButtons of setButtons");
+    throw_ifnot_array(newButtons, "newButtons of setButtons");
     
     objc_msgSend(this.nid, "setButtons:", newButtons);
 };
@@ -585,9 +585,10 @@ Window.prototype.applyFunction = function(f, args) {
 };
 
 /**
-* Create a new sheet. Sheet is a subclass of Window and inherits most methods.
-* @memberOf Sheet
-*/
+ * Create a new sheet. Sheet is a subclass of Window and inherits most methods.
+ * @param {Object} parent the parent editor, window, etc of the sheet.
+ * @memberOf Sheet
+ */
 var Sheet = function(parent) {
     
     throw_ifnot_object(parent, "parent of new Sheet()");
@@ -628,8 +629,8 @@ global.Pane = Pane;
 /**
  * Creates a new Popover. Popover is a subclass of Window and inherits most methods.
  * 
- * @param {Editor} parent the editor containing the text.
- * @param {Range} range the range of text over which the popover should appear.
+ * @param {Object} parent the editor containing the text, or a window, etc.
+ * @param {Range} range the range of text over which the popover should appear. Can also be a rect object <code>{x, y, width, height}</code>.
  * @memberOf Popover
  */
 function Popover(parent, range) {

@@ -4,14 +4,14 @@ var Storage = function(nid) {
 
 global.Storage = Storage;
 
+global._persistent_storage = null;
+
 /**
  * Returns the **persistent** global storage object. Data is saved between launches.
  *
  * @return {Object} A storage object.
  * @memberOf Storage
  */
-
-global._persistent_storage = null;
 Storage.persistent = function() {
     if (_persistent_storage != null)
         return _persistent_storage;
@@ -21,13 +21,14 @@ Storage.persistent = function() {
 };
 
 
+global._transient_storage = null;
+
 /**
  * Returns the **transient** global storage object. Data is deleted when the app is quit.
  *
  * @return {Object} A storage object.
  * @memberOf Storage
  */
-global._transient_storage = null;
 Storage.transient = function() {
     if (_transient_storage != null)
         return _transient_storage;

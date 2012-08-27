@@ -251,6 +251,9 @@ global.Clipboard = Clipboard;
  * @param {String} value the value to copy.
  */
 Clipboard.copy = function(value) {
+    
+    throw_ifnot_string(value, "value of Clipboard.copy()");
+    
     objc_msgSend("controller", "clipboard_copy:", value);
 };
 
@@ -320,10 +323,12 @@ Hooks.addContextMenuItem = function(location, title, options, callback) {
     if (options == null)
         options = {};
     
-    throw_ifnot_string(location);
-    throw_ifnot_string(title);
-    throw_ifnot_object(options);
-    throw_ifnot_function(callback);
+    throw_ifnot_string(location, "location of addContextMenuitem");
+    throw_ifnot_string(title, "title of addContextMenuitem");
+    throw_ifnot_object(options, "options of addContextMenuitem");
+    throw_ifnot_function(callback, "callback of addContextMenuitem");
+    
+    callback = function(str, editornid) { callback(str, new Editor(editornid)); };
     
     options['title'] = title;
     options['callback'] = callback;
@@ -393,14 +398,14 @@ var Storage = function(nid) {
 
 global.Storage = Storage;
 
+global._persistent_storage = null;
+
 /**
  * Returns the **persistent** global storage object. Data is saved between launches.
  *
  * @return {Object} A storage object.
  * @memberOf Storage
  */
-
-global._persistent_storage = null;
 Storage.persistent = function() {
     if (_persistent_storage != null)
         return _persistent_storage;
@@ -410,13 +415,14 @@ Storage.persistent = function() {
 };
 
 
+global._transient_storage = null;
+
 /**
  * Returns the **transient** global storage object. Data is deleted when the app is quit.
  *
  * @return {Object} A storage object.
  * @memberOf Storage
  */
-global._transient_storage = null;
 Storage.transient = function() {
     if (_transient_storage != null)
         return _transient_storage;
@@ -1253,7 +1259,7 @@ Window.prototype.buttons = function() {
 };
 Window.prototype.setButtons = function(newButtons) {
     
-    throw_ifnot_array(newTitle, "newButtons of setButtons");
+    throw_ifnot_array(newButtons, "newButtons of setButtons");
     
     objc_msgSend(this.nid, "setButtons:", newButtons);
 };
@@ -1621,9 +1627,10 @@ Window.prototype.applyFunction = function(f, args) {
 };
 
 /**
-* Create a new sheet. Sheet is a subclass of Window and inherits most methods.
-* @memberOf Sheet
-*/
+ * Create a new sheet. Sheet is a subclass of Window and inherits most methods.
+ * @param {Object} parent the parent editor, window, etc of the sheet.
+ * @memberOf Sheet
+ */
 var Sheet = function(parent) {
     
     throw_ifnot_object(parent, "parent of new Sheet()");
@@ -1664,8 +1671,8 @@ global.Pane = Pane;
 /**
  * Creates a new Popover. Popover is a subclass of Window and inherits most methods.
  * 
- * @param {Editor} parent the editor containing the text.
- * @param {Range} range the range of text over which the popover should appear.
+ * @param {Object} parent the editor containing the text, or a window, etc.
+ * @param {Range} range the range of text over which the popover should appear. Can also be a rect object <code>{x, y, width, height}</code>.
  * @memberOf Popover
  */
 function Popover(parent, range) {
@@ -2226,6 +2233,26 @@ Editor.current = function() {
  */
 Editor.prototype.document = function() {
     return private_construct_or_null(Document, objc_msgSendSync(this.nid, "viewDocument"));
+};
+
+/**
+ * The containing tab.
+ *
+ * @return {Tab} The containing tab.
+ * @memberOf Editor
+ */
+Editor.prototype.tab = function() {
+    return private_construct_or_null(Tab, objc_msgSendSync(this.nid, "tabController"));
+};
+
+/**
+ * The containing window.
+ *
+ * @return {MainWindow} The containing window.
+ * @memberOf Editor
+ */
+Editor.prototype.window = function() {
+    return private_construct_or_null(MainWindow, objc_msgSendSync(this.nid, "windowController"));
 };
 
 /**

@@ -51,10 +51,12 @@ Hooks.addContextMenuItem = function(location, title, options, callback) {
     if (options == null)
         options = {};
     
-    throw_ifnot_string(location);
-    throw_ifnot_string(title);
-    throw_ifnot_object(options);
-    throw_ifnot_function(callback);
+    throw_ifnot_string(location, "location of addContextMenuitem");
+    throw_ifnot_string(title, "title of addContextMenuitem");
+    throw_ifnot_object(options, "options of addContextMenuitem");
+    throw_ifnot_function(callback, "callback of addContextMenuitem");
+    
+    callback = function(str, editornid) { callback(str, new Editor(editornid)); };
     
     options['title'] = title;
     options['callback'] = callback;

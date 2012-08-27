@@ -7,6 +7,9 @@ global.Clipboard = Clipboard;
  * @param {String} value the value to copy.
  */
 Clipboard.copy = function(value) {
+    
+    throw_ifnot_string(value, "value of Clipboard.copy()");
+    
     objc_msgSend("controller", "clipboard_copy:", value);
 };
 
