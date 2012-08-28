@@ -66,7 +66,13 @@ Editor.cursors.each()
 
 
 // Local Notifications
-Alert.notify({ ... })
+// √ Alert.notify({ ... })
+
+// App.version()
+
+App.openPathExternally()
+App.revealPathInFinder()
+
 
 // Icon map
 App.setIconForPath(<icon_location>, <file_path>, <icon_name>) // e.g. App.setIconForPath("scm", "~/somefile.txt", "committed")
