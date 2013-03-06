@@ -835,7 +835,7 @@ Recipe.run = function(callback) {
  */
 Recipe.runOn = function(editor, callback) {
     
-//    throw_ifnot_string(editor, "editor of runOn");
+    throw_if_null(editor, "editor of runOn");
     throw_ifnot_function(callback, "callback of runOn");
     
     objc_msgSend("controller", "runRecipeOn:callback:", editor.nid, function (nid) {
