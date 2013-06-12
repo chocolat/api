@@ -20,7 +20,7 @@
     
     // TODO: Do something with `parent`
     
-    NoddyScheduleBlock(^{
+    NoddyScheduleBlock(NO, ^{
         [callback call:nil arguments:[NSArray arrayWithObject:doc ?: [NSNull null]]];
     });
 }
@@ -106,7 +106,7 @@
         [userNotificationMap removeObjectForKey:uuid]; // Try not to leak (though it's difficult not to)
     
     if ([callback isKindOfClass:[NoddyFunction class]]) {
-        NoddyScheduleBlock(^{
+        NoddyScheduleBlock(NO, ^{
             [callback call:nil arguments:[NSArray arrayWithObject:
                                           [NSNumber numberWithBool:((int)[notification activationType]) == 2]]
              ];

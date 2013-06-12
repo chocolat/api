@@ -392,7 +392,7 @@ Document.prototype.performSave = function() {
  * @memberOf Document
  */
 Document.prototype.isUntitled = function() {
-    objc_msgSend(this.nid, "js_isUntitled");
+    return objc_msgSendSync(this.nid, "js_isUntitled");
 }
 
 /**
@@ -402,7 +402,7 @@ Document.prototype.isUntitled = function() {
  * @memberOf Document
  */
 Document.prototype.isEdited = function() {
-    objc_msgSend(this.nid, "js_isUnsaved");
+    return objc_msgSendSync(this.nid, "js_isUnsaved");
 }
 
 
