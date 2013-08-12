@@ -8,8 +8,9 @@ names.insert(0, 'prelude.js')
 
 full = ''
 for n in names:
-    with open('js/' + n, 'r') as f:
-        full += f.read() + '\n\n\n'
+    if n != '.DS_Store':
+        with open('js/' + n, 'rb') as f:
+            full += str(f.read()) + '\n\n\n'
 
-with open('api.js', 'w') as f:
+with open('api.js', 'wb') as f:
     f.write(full)

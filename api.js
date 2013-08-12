@@ -1982,6 +1982,16 @@ Tab.prototype.visibleDocuments = function() {
 };
 
 /**
+ * The tab's root directory path. This is the directory selectable at the bottom of the source list.
+ *
+ * @return {String} a path string corresponding to the tab's root directory.
+ * @memberOf Tab
+ */
+Tab.prototype.path = function() {
+    return objc_msgSendSync(this.nid, "tabProjectPath");
+};
+
+/**
  * Access the storage object of the Tab (see Storage class).
  *
  * @return {Storage} the storage.
