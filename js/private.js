@@ -2,15 +2,7 @@
  * @api private
  */
 function private_get_mixin() {
-    var stacktrace = new Error().stack;
-    
-    // Find things named /X.chocmixin
-    var m = new RegExp("/([^/]+)\\.chocmixin", "i").exec(stacktrace);
-    if (m.length >= 2 && m[1].length)
-        return "NODDYID$$MIXIN$$" + m[1];
-    if (current_mixin_name != null)
-        return "NODDYID$$MIXIN$$" + global.current_mixin_name;
-    return null;
+    return global.CORE_MIXIN_ID;
 }
 
 /**

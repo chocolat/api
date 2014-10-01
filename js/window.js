@@ -299,17 +299,17 @@ Window.prototype.__defineSetter__("onMessage", Window.prototype.setOnMessage);
  * @memberOf Window
  * @section Events
  */
-Window.prototype.onLoad = function() {
+Window.prototype.clientOnLoad = function() {
     return objc_msgSendSync(this.nid, "clientOnLoad");
 };
-Window.prototype.setOnLoad = function(callback) {
+Window.prototype.setClientOnLoad = function(callback) {
 
-    throw_ifnot_function(callback, "callback of setOnLoad");
+    throw_ifnot_function(callback, "callback of setClientOnLoad");
     
     objc_msgSend(this.nid, "setClientOnLoad:", callback.toString());
 };
-Window.prototype.__defineGetter__("clientOnLoad", Window.prototype.onLoad);
-Window.prototype.__defineSetter__("clientOnLoad", Window.prototype.setOnLoad);
+Window.prototype.__defineGetter__("clientOnLoad", Window.prototype.clientOnLoad);
+Window.prototype.__defineSetter__("clientOnLoad", Window.prototype.setClientOnLoad);
 
 /**
  * Get or set a function that will be called *in the node context* when the window loads.

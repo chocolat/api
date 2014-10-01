@@ -21,7 +21,7 @@
     // TODO: Do something with `parent`
     
     NoddyScheduleBlock(NO, ^{
-        [callback call:nil arguments:[NSArray arrayWithObject:doc ?: [NSNull null]]];
+        [callback callWithArguments:[NSArray arrayWithObject:doc ?: [NSNull null]]];
     });
 }
 
@@ -107,7 +107,7 @@
     
     if ([callback isKindOfClass:[NoddyFunction class]]) {
         NoddyScheduleBlock(NO, ^{
-            [callback call:nil arguments:[NSArray arrayWithObject:
+            [callback callWithArguments:[NSArray arrayWithObject:
                                           [NSNumber numberWithBool:((int)[notification activationType]) == 2]]
              ];
         });

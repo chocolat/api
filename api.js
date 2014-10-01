@@ -1,4 +1,4 @@
-var _ = require("underscore.js");
+var _ = require(global.underscore_path);
 
 /**
  * @api private
@@ -545,15 +545,7 @@ Util.slugifyString = function(str) {
  * @api private
  */
 function private_get_mixin() {
-    var stacktrace = new Error().stack;
-    
-    // Find things named /X.chocmixin
-    var m = new RegExp("/([^/]+)\\.chocmixin", "i").exec(stacktrace);
-    if (m.length >= 2 && m[1].length)
-        return "NODDYID$$MIXIN$$" + m[1];
-    if (current_mixin_name != null)
-        return "NODDYID$$MIXIN$$" + global.current_mixin_name;
-    return null;
+    return global.CORE_MIXIN_ID;
 }
 
 /**
@@ -1384,17 +1376,17 @@ Window.prototype.__defineSetter__("onMessage", Window.prototype.setOnMessage);
  * @memberOf Window
  * @section Events
  */
-Window.prototype.onLoad = function() {
+Window.prototype.clientOnLoad = function() {
     return objc_msgSendSync(this.nid, "clientOnLoad");
 };
-Window.prototype.setOnLoad = function(callback) {
+Window.prototype.setClientOnLoad = function(callback) {
 
-    throw_ifnot_function(callback, "callback of setOnLoad");
+    throw_ifnot_function(callback, "callback of setClientOnLoad");
     
     objc_msgSend(this.nid, "setClientOnLoad:", callback.toString());
 };
-Window.prototype.__defineGetter__("clientOnLoad", Window.prototype.onLoad);
-Window.prototype.__defineSetter__("clientOnLoad", Window.prototype.setOnLoad);
+Window.prototype.__defineGetter__("clientOnLoad", Window.prototype.clientOnLoad);
+Window.prototype.__defineSetter__("clientOnLoad", Window.prototype.setClientOnLoad);
 
 /**
  * Get or set a function that will be called *in the node context* when the window loads.
@@ -2038,9 +2030,17 @@ Document.open = function(path, parent, callback) {
         path = null;
     if (parent == null)
         parent = null;
-    if (callback == null)
-        callback = null;
     
+    if (callback == null) {
+        callback = null;
+    }
+    else {
+        var innerCallback = callback;
+        callback = function(nid) {
+            innerCallback(new Document(nid));
+        };
+    }
+
     objc_msgSend("controller", "documentOpenPath:parent:callback:mixin:", path, parent ? parent.nid : null, callback, private_get_mixin());
 };
 

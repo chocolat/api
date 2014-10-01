@@ -204,9 +204,17 @@ Document.open = function(path, parent, callback) {
         path = null;
     if (parent == null)
         parent = null;
-    if (callback == null)
-        callback = null;
     
+    if (callback == null) {
+        callback = null;
+    }
+    else {
+        var innerCallback = callback;
+        callback = function(nid) {
+            innerCallback(new Document(nid));
+        };
+    }
+
     objc_msgSend("controller", "documentOpenPath:parent:callback:mixin:", path, parent ? parent.nid : null, callback, private_get_mixin());
 };
 

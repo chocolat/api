@@ -1,4 +1,4 @@
-var _ = require("underscore.js");
+var _ = require(global.underscore_path);
 
 /**
  * @api private
