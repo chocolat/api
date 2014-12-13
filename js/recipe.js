@@ -216,6 +216,8 @@ Recipe.prototype.eachLine = function(rng, f) {
         rng = new Range(0, this.length);
     }
     
+    if (typeof rng === 'function') { var _x_ = f; f = rng; rng = _x_; }
+    
     throw_ifnot_range(rng, "rng of eachLine");
     throw_ifnot_function(f, "f of eachLine");
     
